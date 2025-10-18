@@ -1,0 +1,45 @@
+.enhanced-table-card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+}
+.enhanced-table-header {
+    border-radius: 15px 15px 0 0;
+    padding: 20px;
+    border: none;
+}
+.enhanced-table {
+    border: none;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+}
+.enhanced-table thead th {
+    border: none;
+    padding: 15px;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+}
+.enhanced-table tbody tr {
+    transition: all 0.3s ease;
+    border: none;
+}
+.enhanced-table tbody tr:hover {
+    background: rgba(102, 126, 234, 0.1);
+    transform: scale(1.01);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+.enhanced-table tbody td {
+    padding: 15px;
+    border: none;
+    vertical-align: middle;
+}
+.status-badge {
+    padding: 8px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}

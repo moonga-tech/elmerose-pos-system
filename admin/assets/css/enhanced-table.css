@@ -1,0 +1,122 @@
+
+.enhanced-table-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    background-color: #fff;
+}
+
+.enhanced-table-header {
+    background-color: #f7f9fc;
+    color: #333;
+    border-bottom: 1px solid #e0e0e0;
+    border-radius: 12px 12px 0 0;
+    padding: 20px;
+}
+
+.enhanced-table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.enhanced-table thead th {
+    background-color: #f7f9fc;
+    color: #555;
+    border-bottom: 1px solid #e0e0e0;
+    padding: 15px;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    text-align: left;
+}
+
+.enhanced-table tbody tr {
+    transition: background-color 0.2s ease;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.enhanced-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.enhanced-table tbody tr:hover {
+    background-color: #f1f3f5;
+}
+
+.enhanced-table tbody td {
+    padding: 15px;
+    vertical-align: middle;
+    color: #495057;
+}
+
+.action-btn {
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    margin: 0 2px;
+    transition: all 0.2s ease;
+}
+
+.action-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+}
+
+.admin-avatar, .customer-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    margin-right: 12px;
+}
+
+.admin-info, .customer-info {
+    display: flex;
+    align-items: center;
+}
+
+.admin-details, .customer-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.admin-name, .customer-name {
+    font-weight: 600;
+    color: #333;
+}
+
+.admin-role {
+    font-size: 0.8rem;
+    color: #777;
+}
+
+.product-image {
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
+    object-fit: cover;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.status-badge {
+    padding: 6px 10px;
+    border-radius: 15px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.price-tag {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    padding: 4px 8px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}

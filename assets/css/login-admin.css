@@ -1,0 +1,28 @@
+.login-bg {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+}
+.btn-primary {
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    border: none;
+}
+.btn-primary:hover {
+    background: linear-gradient(45deg, #764ba2, #667eea);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+.card-header h5 {
+    color: rgb(180, 51, 180);
+    font-size: 1em;
+}
+
+::placeholder {
+    font-size: 1em;
+}
+
+.admin-login-form .forgot-password {
+    text-decoration: none;
+}
+.admin-login-form .forgot-password:hover {
+    color: rgb(172, 42, 172);
+}

@@ -1,0 +1,2 @@
+[2025-10-03 12:38:58] forgotPassword requested | role=admin | email=luka@gmail.com
+[2025-10-03 12:38:58] QUERY: SELECT * FROM admins WHERE email = 'luka@gmail.com' LIMIT 1 | rows=0
