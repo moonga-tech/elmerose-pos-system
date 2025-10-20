@@ -375,5 +375,77 @@ if(isset($_POST['updateProfile'])){
     }
 }
 
+// --- Suppliers CRUD handlers ---
+// Ensure suppliers table exists (minimal schema)
+mysqli_query($conn, "CREATE TABLE IF NOT EXISTS suppliers (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    contact_person VARCHAR(255) NULL,
+    phone VARCHAR(100) NULL,
+    email VARCHAR(255) NULL,
+    address TEXT NULL,
+    status TINYINT(1) DEFAULT 1,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)");
+
+if(isset($_POST['saveSupplier'])){
+    $name = validated($_POST['name'] ?? '');
+    $contact = validated($_POST['contact_person'] ?? '');
+    $phone = validated($_POST['phone'] ?? '');
+    $email = validated($_POST['email'] ?? '');
+    $address = validated($_POST['address'] ?? '');
+
+    if($name == ''){
+        redirect('supplier-create.php', 'Name is required', 'error');
+    }
+
+    $data = [
+        'name' => $name,
+        'contact_person' => $contact,
+        'phone' => $phone,
+        'email' => $email,
+        'address' => $address,
+        'status' => 1,
+    ];
+
+    $result = insert('suppliers', $data);
+    if($result) redirect('suppliers.php', 'Supplier added successfully', 'success');
+    else redirect('supplier-create.php', 'Failed to add supplier', 'error');
+}
+
+if(isset($_POST['updateSupplier'])){
+    $supplierId = validated($_POST['supplierId'] ?? '');
+    $name = validated($_POST['name'] ?? '');
+    $contact = validated($_POST['contact_person'] ?? '');
+    $phone = validated($_POST['phone'] ?? '');
+    $email = validated($_POST['email'] ?? '');
+    $address = validated($_POST['address'] ?? '');
+
+    if($supplierId == '' || $name == ''){
+        redirect('supplier-edit.php?id=' . $supplierId, 'All required fields must be filled', 'error');
+    }
+
+    $data = [
+        'name' => $name,
+        'contact_person' => $contact,
+        'phone' => $phone,
+        'email' => $email,
+        'address' => $address,
+    ];
+
+    $result = update('suppliers', $supplierId, $data);
+    if($result) redirect('supplier-edit.php?id=' . $supplierId, 'Supplier updated successfully', 'success');
+    else redirect('supplier-edit.php?id=' . $supplierId, 'Failed to update supplier', 'error');
+}
+
+if(isset($_POST['deleteSupplier'])){
+    $supplierId = validated($_POST['supplier_id'] ?? '');
+    if($supplierId == '') redirect('suppliers.php', 'Invalid supplier', 'error');
+
+    $result = delete('suppliers', $supplierId);
+    if($result) redirect('suppliers.php', 'Supplier deleted', 'success');
+    else redirect('suppliers.php', 'Failed to delete supplier', 'error');
+}
+
 
 ?>

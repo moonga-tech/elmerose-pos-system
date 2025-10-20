@@ -94,6 +94,10 @@
                     <div class="sb-nav-link-icon"><i class="fas fa-users"></i></div>
                     Customers
                 </a>
+                <a class="nav-link" href="suppliers.php">
+                    <div class="sb-nav-link-icon"><i class="fas fa-users"></i></div>
+                    Suppliers
+                </a>
                 <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseAdmins" aria-expanded="false" aria-controls="collapseAdmins">
                     <div class="sb-nav-link-icon"><i class="fas fa-user-shield"></i></div>
                     Admins/Staff

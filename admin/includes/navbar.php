@@ -15,7 +15,7 @@
     transform: scale(1.05);
     transition: all 0.3s ease;
 } */
-
+    
 #sidebarToggle {
     background: rgba(255,255,255,0.1);
     border: 1px solid rgba(255,255,255,0.2);
