@@ -39,6 +39,7 @@
                             <th><i class="fas fa-user me-2"></i>Customer</th>
                             <th><i class="fas fa-peso-sign me-2"></i>Amount</th>
                             <th><i class="fas fa-info-circle me-2"></i>Status</th>
+                            <th><i class="fas fa-credit-card me-2"></i>Payment</th>
                             <th><i class="fas fa-calendar me-2"></i>Date</th>
                             <th><i class="fas fa-cogs me-2"></i>Actions</th>
                         </tr>
@@ -163,6 +164,9 @@
                                         <span class="badge <?= $statusClass; ?> status-badge">
                                             <?= ucfirst($order['status']); ?>
                                         </span>
+                                    </td>
+                                    <td>
+                                        <?= !empty($order['payment_method']) ? htmlspecialchars(strtoupper($order['payment_method']), ENT_QUOTES, 'UTF-8') : 'N/A'; ?>
                                     </td>
                                     <td><?= date('M d, Y H:i', strtotime($order['created_at'])); ?></td>
                                     <td>

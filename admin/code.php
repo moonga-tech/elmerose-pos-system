@@ -148,6 +148,9 @@ if(isset($_POST['saveProduct'])){
     $has_expiry = isset($_POST['has_expiry']) ? 1 : 0;
     $expiry_date = $has_expiry && !empty($_POST['expiry_date']) ? validated($_POST['expiry_date']) : null;
     $expiry_alert_days = $has_expiry ? validated($_POST['expiry_alert_days']) : 30;
+    $color_id = !empty($_POST['color_id']) ? validated($_POST['color_id']) : null;
+    $variant_size = validated($_POST['variant_size']);
+    $variant_unit = validated($_POST['variant_unit']);
 
     if($_FILES['image']['size'] > 0) {
         $path = "../assets/uploads/products";
@@ -172,11 +175,38 @@ if(isset($_POST['saveProduct'])){
         'has_expiry' => $has_expiry,
         'expiry_date' => $expiry_date,
         'expiry_alert_days' => $expiry_alert_days,
+        'color_id' => $color_id,
     ];
 
     $result = insert("products", $data);
 
     if($result) {
+        $productId = mysqli_insert_id($conn);
+        
+        // Create product variant if size/unit specified
+        if(!empty($variant_size) && !empty($variant_unit)) {
+            $volume_liters = null;
+            $weight_kg = null;
+            
+            // Calculate volume or weight based on unit
+            if(in_array($variant_unit, ['ml', 'l'])) {
+                $volume_liters = $variant_unit == 'ml' ? $variant_size / 1000 : $variant_size;
+            } elseif(in_array($variant_unit, ['g', 'kg'])) {
+                $weight_kg = $variant_unit == 'g' ? $variant_size / 1000 : $variant_size;
+            }
+            
+            $variantData = [
+                'product_id' => $productId,
+                'size' => $variant_size,
+                'unit' => $variant_unit,
+                'volume_liters' => $volume_liters,
+                'weight_kg' => $weight_kg,
+                'stock_quantity' => $quantity
+            ];
+            
+            insert("product_variants", $variantData);
+        }
+        
         redirect("products.php", "Product added successfully", "success");
     } else {
         redirect("products-create.php", "Failed to add product", "error");

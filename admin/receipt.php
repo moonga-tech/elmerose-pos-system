@@ -39,6 +39,9 @@ $order_items = mysqli_query($conn, "SELECT oi.*, p.name FROM order_items oi JOIN
         <h2 class="text-center mb-4">Receipt</h2>
         <p><strong>Order ID:</strong> #<?= $order['data']['id'] ?></p>
         <p><strong>Date:</strong> <?= date('d/m/Y', strtotime($order['data']['created_at'])) ?></p>
+        <?php if (!empty($order['data']['payment_method'])): ?>
+            <p><strong>Payment Method:</strong> <?= htmlspecialchars(strtoupper($order['data']['payment_method']), ENT_QUOTES, 'UTF-8') ?></p>
+        <?php endif; ?>
         <table class="table table-bordered">
             <thead>
                 <tr>

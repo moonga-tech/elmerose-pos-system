@@ -8,6 +8,13 @@ if(!isset($_SESSION['customerLoggedIn'])) {
 
 $customer = $_SESSION['customerUser'];
 $order_id = isset($_GET['order_id']) ? validated($_GET['order_id']) : 'N/A';
+$orderData = null;
+if ($order_id !== 'N/A') {
+    $g = getById('orders', $order_id);
+    if ($g['status'] === 200) {
+        $orderData = $g['data'];
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -68,6 +75,9 @@ $order_id = isset($_GET['order_id']) ? validated($_GET['order_id']) : 'N/A';
                     <i class="fas fa-check-circle fa-5x text-success mb-4"></i>
                     <h2 class="mb-3">Order Placed Successfully!</h2>
                     <p class="text-muted">Your Order ID is: <strong>#<?= htmlspecialchars($order_id, ENT_QUOTES, 'UTF-8'); ?></strong></p>
+                    <?php if ($orderData && isset($orderData['payment_method'])): ?>
+                        <p class="text-muted">Payment method: <strong><?= htmlspecialchars(strtoupper($orderData['payment_method']), ENT_QUOTES, 'UTF-8'); ?></strong></p>
+                    <?php endif; ?>
                     <p>Thank you for your purchase. You can view your order details in the "My Orders" section.</p>
                     <a href="dashboard.php" class="btn btn-primary mt-3"><i class="fas fa-shopping-bag me-2"></i>Continue Shopping</a>
                     <a href="orders.php" class="btn btn-outline-primary mt-3"><i class="fas fa-receipt me-2"></i>View My Orders</a>

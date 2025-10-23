@@ -115,6 +115,56 @@
                     </div>
                 </div>
                 
+                <div class="row">
+                    <div class="col-md-4 mb-4">
+                        <label for="color_id" class="form-label">
+                            <i class="fas fa-palette me-2 text-primary"></i>Color (for Paint)
+                        </label>
+                        <select class="form-select" id="color_id" name="color_id">
+                            <option value="">No Color (Non-Paint Item)</option>
+                            <?php
+                            $colors = mysqli_query($conn, "SELECT * FROM paint_colors ORDER BY name");
+                            if($colors && mysqli_num_rows($colors) > 0){
+                                while($color = mysqli_fetch_assoc($colors)){
+                                    echo "<option value='{$color['id']}'>{$color['name']}</option>";
+                                }
+                            }
+                            ?>
+                        </select>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <label for="variant_size" class="form-label">
+                            <i class="fas fa-ruler me-2 text-primary"></i>Size/Volume
+                        </label>
+                        <select class="form-select" id="variant_size" name="variant_size">
+                            <option value="">Standard Size</option>
+                            <option value="250">250 mL</option>
+                            <option value="500">500 mL</option>
+                            <option value="1">1 Liter</option>
+                            <option value="4">4 Liters</option>
+                            <option value="16">16 Liters</option>
+                            <option value="1">1 kg</option>
+                            <option value="5">5 kg</option>
+                            <option value="25">25 kg</option>
+                            <option value="50">50 kg</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <label for="variant_unit" class="form-label">
+                            <i class="fas fa-balance-scale me-2 text-primary"></i>Unit
+                        </label>
+                        <select class="form-select" id="variant_unit" name="variant_unit">
+                            <option value="pcs">Pieces</option>
+                            <option value="ml">Milliliters (mL)</option>
+                            <option value="l">Liters (L)</option>
+                            <option value="g">Grams (g)</option>
+                            <option value="kg">Kilograms (kg)</option>
+                            <option value="m">Meters (m)</option>
+                            <option value="ft">Feet (ft)</option>
+                        </select>
+                    </div>
+                </div>
+                
                 <div class="mb-4">
                     <label for="description" class="form-label">
                         <i class="fas fa-align-left me-2 text-primary"></i>Description

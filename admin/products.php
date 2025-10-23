@@ -47,7 +47,7 @@
                     <tbody>
                         <?php 
                             // Build prepared statement for products with optional search
-                            $sql = "SELECT p.*, c.name as category_name FROM products p LEFT JOIN categories c ON p.category_id = c.id";
+                            $sql = "SELECT p.*, c.name as category_name, pc.name as color_name FROM products p LEFT JOIN categories c ON p.category_id = c.id LEFT JOIN paint_colors pc ON p.color_id = pc.id";
                             $params = [];
                             $types = '';
 
@@ -155,7 +155,12 @@
                                             <td>
                                                 <div class="product-info">
                                                     <div class="product-name"><?= htmlspecialchars($item['name'], ENT_QUOTES, 'UTF-8'); ?></div>
-                                                    <div class="product-details"><?= htmlspecialchars(substr($item['description'], 0, 40), ENT_QUOTES, 'UTF-8'); ?>...</div>
+                                                    <div class="product-details">
+                                                        <?= htmlspecialchars(substr($item['description'], 0, 40), ENT_QUOTES, 'UTF-8'); ?>...
+                                                        <?php if($item['color_name']): ?>
+                                                            <br><small class="text-info">Color: <?= htmlspecialchars($item['color_name'], ENT_QUOTES, 'UTF-8'); ?></small>
+                                                        <?php endif; ?>
+                                                    </div>
                                                 </div>
                                             </td>
                                             

@@ -48,9 +48,13 @@ CREATE TABLE orders (
     customer_id INT NOT NULL,
     total_amount DECIMAL(10,2) NOT NULL,
     status ENUM('pending', 'confirmed', 'delivered', 'cancelled') DEFAULT 'pending',
+    payment_method VARCHAR(50) DEFAULT 'cod',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (customer_id) REFERENCES customers(id)
 );
+
+ALTER TABLE orders 
+ADD COLUMN payment_method VARCHAR(50) DEFAULT 'cod' 
 
 CREATE TABLE order_items (
     id INT AUTO_INCREMENT PRIMARY KEY,

@@ -66,9 +66,40 @@ $customer = $_SESSION['customerUser'];
             <div class="card-body p-4">
                 <?php alertMessage(); ?>
                 <div id="cartItems"></div>
-                <div class="text-end mt-3">
-                    <h4>Total: ₱<span id="cartTotal">0.00</span></h4>
-                    <button class="btn btn-primary" onclick="placeOrder()"><i class="fas fa-check-circle me-2"></i>Place Order</button>
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <h5>Payment Method</h5>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="payment_method" id="pickup" value="pickup" checked onchange="updateTotal()">
+                            <label class="form-check-label" for="pickup">
+                                <i class="fas fa-store me-2"></i>Pick up from Store (Free)
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="payment_method" id="cod" value="cod" onchange="updateTotal()">
+                            <label class="form-check-label" for="cod">
+                                <i class="fas fa-truck me-2"></i>Cash on Delivery (+₱50 delivery fee)
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <div class="border p-3 rounded">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Subtotal:</span>
+                                <span>₱<span id="subtotal">0.00</span></span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2" id="deliveryFeeRow" style="display: none;">
+                                <span>Delivery Fee:</span>
+                                <span>₱<span id="deliveryFee">50.00</span></span>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between">
+                                <strong>Total:</strong>
+                                <strong>₱<span id="cartTotal">0.00</span></strong>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary mt-3" onclick="placeOrder()"><i class="fas fa-check-circle me-2"></i>Place Order</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -124,6 +155,23 @@ $customer = $_SESSION['customerUser'];
             });
 
             cartItemsContainer.appendChild(table);
+            document.getElementById('subtotal').textContent = total.toFixed(2);
+            updateTotal();
+        }
+
+        function updateTotal() {
+            const subtotal = parseFloat(document.getElementById('subtotal').textContent || '0');
+            const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
+            const deliveryFeeRow = document.getElementById('deliveryFeeRow');
+            
+            let total = subtotal;
+            if (paymentMethod === 'cod') {
+                deliveryFeeRow.style.display = 'flex';
+                total += 50;
+            } else {
+                deliveryFeeRow.style.display = 'none';
+            }
+            
             document.getElementById('cartTotal').textContent = total.toFixed(2);
         }
 
@@ -238,12 +286,22 @@ $customer = $_SESSION['customerUser'];
                 return;
             }
 
+            const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
+            const subtotal = parseFloat(document.getElementById('subtotal').textContent || '0');
+            const deliveryFee = paymentMethod === 'cod' ? 50 : 0;
+            const total = subtotal + deliveryFee;
+
             fetch('place-order.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({cart: cart})
+                body: JSON.stringify({
+                    cart: cart, 
+                    payment_method: paymentMethod,
+                    delivery_fee: deliveryFee,
+                    total_amount: total
+                })
             })
             .then(response => response.json())
             .then(data => {
