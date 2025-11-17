@@ -8,12 +8,15 @@ if(!isset($_SESSION['customerLoggedIn'])) {
 
 $customer = $_SESSION['customerUser'];
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Customer Dashboard - Elmerose POS</title>
+
     <link href="../assets/bootstrap-5.3.8-dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -31,6 +34,8 @@ $customer = $_SESSION['customerUser'];
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             transition: all 0.3s ease;
             background: white;
+            max-width: 80%;
+            font-size: 13px;
         }
         .product-card:hover {
             transform: translateY(-5px);
@@ -66,7 +71,7 @@ $customer = $_SESSION['customerUser'];
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
         <div class="container">
-            <a class="navbar-brand" href="#">
+            <a class="navbar-brand" href="dashboard.php">
                 <i class="fas fa-store me-2"></i>Elmerose Store
             </a>
             <div class="navbar-nav ms-auto">
@@ -112,7 +117,7 @@ $customer = $_SESSION['customerUser'];
     <!-- product card -->
     <div class="row" id="productsContainer">
             <?php 
-            $products = getAll("products", "0");
+            $products = getAll("products", "1");
             if(mysqli_num_rows($products) > 0) {
                 foreach($products as $product) {
                     ?>
@@ -126,10 +131,10 @@ $customer = $_SESSION['customerUser'];
                                 </div>
                             <?php endif; ?>
                             <div class="card-body">
-                                <h5 class="card-title"><?= htmlspecialchars($product['name'], ENT_QUOTES, 'UTF-8'); ?></h5>
+                                <h5 class="card-title text-uppercase"><?= htmlspecialchars($product['name'], ENT_QUOTES, 'UTF-8'); ?></h5>
                                 <p class="card-text text-muted"><?= htmlspecialchars(substr($product['description'], 0, 80), ENT_QUOTES, 'UTF-8'); ?>...</p>
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <h4 class="text-primary mb-0">₱ <?= number_format($product['price'], 2); ?></h4>
+                                    <h5 class="text-primary mb-0">₱ <?= number_format($product['price'], 2); ?></h5>
                                     <span class="badge <?= $product['quantity'] == 0 ? 'bg-danger' : ($product['quantity'] <= 5 ? 'bg-warning' : 'bg-success'); ?>">Stock: <?= $product['quantity']; ?></span>
                                 </div>
                                 <div class="mt-3">

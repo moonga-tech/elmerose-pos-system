@@ -14,7 +14,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     if($productId && $quantity > 0) {
         // Get current product stock
-        $stmt = $conn->prepare("SELECT quantity, name FROM products WHERE id = ? AND status = 0");
+        $stmt = $conn->prepare("SELECT quantity, name FROM products WHERE id = ? AND status = 1");
         $stmt->bind_param("i", $productId);
         $stmt->execute();
         $result = $stmt->get_result();

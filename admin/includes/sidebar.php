@@ -94,6 +94,10 @@
                     <div class="sb-nav-link-icon"><i class="fas fa-users"></i></div>
                     Customers
                 </a>
+                <a class="nav-link" href="settings.php">
+                    <div class="sb-nav-link-icon"><i class="fas fa-cog"></i></div>
+                    Settings
+                </a>
                 <a class="nav-link" href="suppliers.php">
                     <div class="sb-nav-link-icon"><i class="fas fa-users"></i></div>
                     Suppliers

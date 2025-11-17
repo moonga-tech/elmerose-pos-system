@@ -14,6 +14,17 @@ if($order['status'] != 200){
 
 $order_items = mysqli_query($conn, "SELECT oi.*, p.name FROM order_items oi JOIN products p ON p.id = oi.product_id WHERE oi.order_id = '$order_id'");
 
+// fetch customer name for the order
+$customer_name = '';
+if (!empty($order['data']['customer_id'])) {
+    $cid = (int)$order['data']['customer_id'];
+    $custRes = mysqli_query($conn, "SELECT name FROM customers WHERE id = '$cid' LIMIT 1");
+    if ($custRes && mysqli_num_rows($custRes) > 0) {
+        $crow = mysqli_fetch_assoc($custRes);
+        $customer_name = $crow['name'];
+    }
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -37,8 +48,15 @@ $order_items = mysqli_query($conn, "SELECT oi.*, p.name FROM order_items oi JOIN
 <body>
     <div class="receipt-container" id="receipt">
         <h2 class="text-center mb-4">Receipt</h2>
+        <?php if (!empty($customer_name)): ?>
+            <p><strong>Customer:</strong> <?= htmlspecialchars($customer_name, ENT_QUOTES, 'UTF-8') ?></p>
+        <?php endif; ?>
         <p><strong>Order ID:</strong> #<?= $order['data']['id'] ?></p>
         <p><strong>Date:</strong> <?= date('d/m/Y', strtotime($order['data']['created_at'])) ?></p>
+        <?php if (!empty($order['data']['delivery_address'])): ?>
+            <p><strong>Delivery address:</strong><br><?= nl2br(htmlspecialchars($order['data']['delivery_address'], ENT_QUOTES, 'UTF-8')) ?></p>
+        <?php endif; ?>
+        
         <?php if (!empty($order['data']['payment_method'])): ?>
             <p><strong>Payment Method:</strong> <?= htmlspecialchars(strtoupper($order['data']['payment_method']), ENT_QUOTES, 'UTF-8') ?></p>
         <?php endif; ?>
@@ -52,16 +70,31 @@ $order_items = mysqli_query($conn, "SELECT oi.*, p.name FROM order_items oi JOIN
                 </tr>
             </thead>
             <tbody>
-                <?php foreach($order_items as $item): ?>
+                <?php 
+                $items_total = 0;
+                    foreach($order_items as $item): 
+                        $lineTotal = $item['price'] * $item['quantity'];
+                        $items_total += $lineTotal;
+                    ?>
                 <tr>
-                    <td><?= $item['name'] ?></td>
-                    <td><?= $item['quantity'] ?></td>
+                    <td><?= htmlspecialchars($item['name'], ENT_QUOTES, 'UTF-8') ?></td>
+                    <td><?= (int)$item['quantity'] ?></td>
                     <td>₱<?= number_format($item['price'], 2) ?></td>
-                    <td>₱<?= number_format($item['price'] * $item['quantity'], 2) ?></td>
+                    <td>₱<?= number_format($lineTotal, 2) ?></td>
                 </tr>
                 <?php endforeach; ?>
             </tbody>
             <tfoot>
+                <tr>
+                    <th colspan="3" class="text-end">Subtotal:</th>
+                    <th>₱<?= number_format($items_total, 2) ?></th>
+                </tr>
+                <?php if (!empty($order['data']['delivery_fee']) && (float)$order['data']['delivery_fee'] > 0): ?>
+                <tr>
+                    <th colspan="3" class="text-end">Delivery fee:</th>
+                    <th>₱<?= number_format((float)$order['data']['delivery_fee'], 2) ?></th>
+                </tr>
+                <?php endif; ?>
                 <tr>
                     <th colspan="3" class="text-end">Total:</th>
                     <th>₱<?= number_format($order['data']['total_amount'], 2) ?></th>

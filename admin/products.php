@@ -178,7 +178,7 @@
                                                 <?php
                                                     if(isset($item['status']) && $item['status'] == 2){
                                                         echo "<span class='badge bg-dark status-badge'><i class='fas fa-archive me-1'></i>Archived</span>";
-                                                    } else if(isset($item['status']) && $item['status'] == 0){
+                                                    } else if(isset($item['status']) && $item['status'] == 1){
                                                         echo "<span class='badge bg-success status-badge'><i class='fas fa-eye me-1'></i>Visible</span>";
                                                     } else {
                                                         echo "<span class='badge bg-secondary status-badge'><i class='fas fa-eye-slash me-1'></i>Hidden</span>";

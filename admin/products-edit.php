@@ -80,8 +80,9 @@
                             <div class="col-md-12 mb-3">
                                 <label for="status">Status (Unchecked=Visible, Checked=Hidden)</label>
                                 <br />
-                                <input type="checkbox" id="status" name="status" value="1"
-                                    style="width: 20px; height: 20px;" <?= $product['data']['status'] == true ? 'checked' : ''; ?>>
+                                <input type="checkbox" id="status" name="status" value="1" 
+                                    style="width: 20px; height: 20px;" 
+                                    <?= $product['data']['status'] == 0 ? 'checked' : ''; ?>>
                             </div>
 
                             <div class="col-md-4 mb-3">
@@ -104,8 +105,8 @@
                                     value="<?= htmlspecialchars($product['data']['expiry_alert_days'] ?? '30', ENT_QUOTES, 'UTF-8'); ?>" min="1">
                             </div>
 
-                            <div class="col-md-6 mb-3 text-end">
-                                <button type="submit" class="btn btn-primary" name="updateProduct">Update</button>
+                            <div class="col-md-6 mb-3 text-center button-div">
+                                <button type="submit" class="btn btn-primary button-style" name="updateProduct">Update</button>
                             </div>
                             <?php
                         } else {

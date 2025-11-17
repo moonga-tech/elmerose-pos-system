@@ -1,5 +1,5 @@
 <?php
-require 'config/function.php';
+    require 'config/function.php';
 ?>
 
 <!DOCTYPE html>
@@ -12,6 +12,7 @@ require 'config/function.php';
 
     <link rel="stylesheet" href="assets/css/login-admin.css">
     <link rel="stylesheet" href="assets/bootstrap-5.3.8-dist/css/bootstrap.min.css">
+    
 
 </head>
 <body>

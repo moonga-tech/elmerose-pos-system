@@ -5,9 +5,9 @@ $q = isset($_GET['q']) ? trim($_GET['q']) : '';
 
 if($q !== '') {
     $q_esc = mysqli_real_escape_string($conn, $q);
-    $sql = "SELECT * FROM products WHERE status = 0 AND (name LIKE '%$q_esc%' OR description LIKE '%$q_esc%') ORDER BY id DESC";
+    $sql = "SELECT * FROM products WHERE status = 1 AND (name LIKE '%$q_esc%' OR description LIKE '%$q_esc%') ORDER BY id DESC";
 } else {
-    $sql = "SELECT * FROM products WHERE status = 0 ORDER BY id DESC";
+    $sql = "SELECT * FROM products WHERE status = 1 ORDER BY id DESC";
 }
 
 $res = mysqli_query($conn, $sql);
@@ -25,6 +25,8 @@ if($res && mysqli_num_rows($res) > 0) {
         // Use json_encode to safely escape the product name for JS
         $jsName = json_encode($product['name']);
 
+        echo "<small class=\"mb-2\">Filtered</small>";
+
         echo "<div class=\"col-md-4 mb-4\">";
         echo "<div class=\"card product-card\" data-product-id=\"$id\">";
         if($image) {
@@ -33,9 +35,9 @@ if($res && mysqli_num_rows($res) > 0) {
             echo "<div class=\"product-image bg-light d-flex align-items-center justify-content-center\"><i class=\"fas fa-image fa-3x text-muted\"></i></div>";
         }
         echo "<div class=\"card-body\">";
-        echo "<h5 class=\"card-title\">$name</h5>";
+        echo "<h5 class=\"card-title text-uppercase\">$name</h5>";
         echo "<p class=\"card-text text-muted\">$desc...</p>";
-        echo "<div class=\"d-flex justify-content-between align-items-center\"><h4 class=\"text-primary mb-0\">₱$price</h4><span class=\"badge " . ($qty == 0 ? 'bg-danger' : ($qty <= 5 ? 'bg-warning' : 'bg-success')) . "\">Stock: $qty</span></div>";
+        echo "<div class=\"d-flex justify-content-between align-items-center\"><h5 class=\"text-primary mb-0\">₱ $price</h5><span class=\"badge " . ($qty == 0 ? 'bg-danger' : ($qty <= 5 ? 'bg-warning' : 'bg-success')) . "\">Stock: $qty</span></div>";
 
         // Use data attributes and a class for the add-to-cart button so we can bind events from JS
         $safeNameAttr = htmlspecialchars($product['name'], ENT_QUOTES, 'UTF-8');

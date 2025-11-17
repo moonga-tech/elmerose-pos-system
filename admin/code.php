@@ -96,7 +96,7 @@ if(isset($_POST['updateAdmin'])){
 if(isset($_POST['saveCategory'])){
     $name = validated($_POST['name']);
     $description = validated($_POST['description']);
-    $status = isset($_POST['status']) == true ? 1 : 0;
+    $status = isset($_POST['status']) == true ? 0 : 1;
 
     if($name != '' && $description != ''){
         $data = [
@@ -144,7 +144,7 @@ if(isset($_POST['saveProduct'])){
     $description = validated($_POST['description']);
     $price = validated($_POST['price']);
     $quantity = validated($_POST['quantity']);
-    $status = isset($_POST['status']) == true ? 1 : 0;
+    $status = isset($_POST['status']) == true ? 0 : 1;
     $has_expiry = isset($_POST['has_expiry']) ? 1 : 0;
     $expiry_date = $has_expiry && !empty($_POST['expiry_date']) ? validated($_POST['expiry_date']) : null;
     $expiry_alert_days = $has_expiry ? validated($_POST['expiry_alert_days']) : 30;
@@ -226,7 +226,7 @@ if(isset($_POST['updateProduct'])){
     $description = validated($_POST['description']);
     $price = validated($_POST['price']);
     $quantity = validated($_POST['quantity']);
-    $status = isset($_POST['status']) == true ? 1 : 0;
+    $status = isset($_POST['status']) == true ? 0 : 1;
 
     if(empty($_FILES['image']['name'])){
         $final_image = $productData['data']['image'];

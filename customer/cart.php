@@ -66,40 +66,48 @@ $customer = $_SESSION['customerUser'];
             <div class="card-body p-4">
                 <?php alertMessage(); ?>
                 <div id="cartItems"></div>
-                <div class="row mt-4">
-                    <div class="col-md-6">
-                        <h5>Payment Method</h5>
-                        <div class="form-check mb-2">
-                            <input class="form-check-input" type="radio" name="payment_method" id="pickup" value="pickup" checked onchange="updateTotal()">
-                            <label class="form-check-label" for="pickup">
-                                <i class="fas fa-store me-2"></i>Pick up from Store (Free)
-                            </label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="payment_method" id="cod" value="cod" onchange="updateTotal()">
-                            <label class="form-check-label" for="cod">
-                                <i class="fas fa-truck me-2"></i>Cash on Delivery (+₱50 delivery fee)
-                            </label>
+                <div class="text-end mt-3">
+                    <h6>Subtotal: ₱ <span id="cartSubtotal">0.00</span></h6>
+                    <h6>Delivery fee: ₱ <span id="deliveryFee">0.00</span></h6>
+                    <h4>Total: ₱ <span id="cartTotal">0.00</span></h4>
+
+                    <div class="mt-3 text-start mb-2">
+                        <label class="form-label fw-semibold">Delivery option</label>
+                        <div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="delivery_option" id="do_pickup" value="pickup" onchange="renderCart()">
+                                <label class="form-check-label" for="do_pickup">Pick Up (no fee)</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="delivery_option" id="do_cod" value="cod" checked onchange="renderCart()">
+                                <label class="form-check-label" for="do_cod">Cash on Delivery (delivery fee applies)</label>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-md-6 text-end">
-                        <div class="border p-3 rounded">
-                            <div class="d-flex justify-content-between mb-2">
-                                <span>Subtotal:</span>
-                                <span>₱<span id="subtotal">0.00</span></span>
+
+                    <div class="mt-3 text-start mb-2">
+                        <label class="form-label fw-semibold">Payment method</label>
+                        <div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="payment_method" id="pm_cod" value="cod" checked>
+                                <label class="form-check-label" for="pm_cod">Cash on Delivery</label>
                             </div>
-                            <div class="d-flex justify-content-between mb-2" id="deliveryFeeRow" style="display: none;">
-                                <span>Delivery Fee:</span>
-                                <span>₱<span id="deliveryFee">50.00</span></span>
-                            </div>
-                            <hr>
-                            <div class="d-flex justify-content-between">
-                                <strong>Total:</strong>
-                                <strong>₱<span id="cartTotal">0.00</span></strong>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="payment_method" id="pm_online" value="online">
+                                <label class="form-check-label text-danger" for="pm_online">Online Payment Coming Soon!!</label>
                             </div>
                         </div>
-                        <button class="btn btn-primary mt-3" onclick="placeOrder()"><i class="fas fa-check-circle me-2"></i>Place Order</button>
                     </div>
+
+                    <div id="deliveryAddressBlock" class="mt-3 text-start mb-2" style="display:none;">
+                        <label class="form-label fw-semibold">Delivery address</label>
+                        <div>
+                            <textarea id="delivery_address" class="form-control" rows="2" placeholder="Enter delivery address (required for Cash on Delivery)"></textarea>
+                            <div class="form-text">Provide the full address where you'd like your order delivered.</div>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="placeOrder(this)"><i class="fas fa-check-circle me-2"></i>Place Order</button>
                 </div>
             </div>
         </div>
@@ -107,7 +115,9 @@ $customer = $_SESSION['customerUser'];
 
     <script src="../assets/bootstrap-5.3.8-dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    // Delivery fee (COD) from server-side config
+    const COD_FEE = <?= json_encode((float)get_delivery_fee()); ?>;
 
         function renderCart() {
             const cartItemsContainer = document.getElementById('cartItems');
@@ -155,24 +165,22 @@ $customer = $_SESSION['customerUser'];
             });
 
             cartItemsContainer.appendChild(table);
-            document.getElementById('subtotal').textContent = total.toFixed(2);
-            updateTotal();
-        }
-
-        function updateTotal() {
-            const subtotal = parseFloat(document.getElementById('subtotal').textContent || '0');
-            const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
-            const deliveryFeeRow = document.getElementById('deliveryFeeRow');
-            
-            let total = subtotal;
-            if (paymentMethod === 'cod') {
-                deliveryFeeRow.style.display = 'flex';
-                total += 50;
-            } else {
-                deliveryFeeRow.style.display = 'none';
+            // update subtotal and total display
+            document.getElementById('cartSubtotal').textContent = total.toFixed(2);
+            // compute delivery fee based on selected option
+            const deliveryOption = document.querySelector('input[name="delivery_option"]:checked') ? document.querySelector('input[name="delivery_option"]:checked').value : 'cod';
+                const deliveryFee = (deliveryOption === 'cod') ? COD_FEE : 0.00;
+            document.getElementById('deliveryFee').textContent = deliveryFee.toFixed(2);
+            document.getElementById('cartTotal').textContent = (total + deliveryFee).toFixed(2);
+            // show/hide delivery address block depending on selected delivery option
+            const addrBlock = document.getElementById('deliveryAddressBlock');
+            if (addrBlock) {
+                if (deliveryOption === 'cod') {
+                    addrBlock.style.display = 'block';
+                } else {
+                    addrBlock.style.display = 'none';
+                }
             }
-            
-            document.getElementById('cartTotal').textContent = total.toFixed(2);
         }
 
         async function updateQuantity(index, change) {
@@ -280,39 +288,52 @@ $customer = $_SESSION['customerUser'];
             }
         }
 
-        function placeOrder() {
+        function placeOrder(btn) {
             if(cart.length === 0) {
                 alert("Your cart is empty!");
                 return;
             }
+            const deliveryOption = document.querySelector('input[name="delivery_option"]:checked') ? document.querySelector('input[name="delivery_option"]:checked').value : 'cod';
+            const pmInput = document.querySelector('input[name="payment_method"]:checked');
+            const paymentMethod = pmInput ? pmInput.value : 'cod';
 
-            const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
-            const subtotal = parseFloat(document.getElementById('subtotal').textContent || '0');
-            const deliveryFee = paymentMethod === 'cod' ? 50 : 0;
-            const total = subtotal + deliveryFee;
+            // show a simple loading indicator
+            if (btn) { btn.disabled = true; }
+
+            // If Cash on Delivery is selected, ensure address is provided
+            if (deliveryOption === 'cod') {
+                const addrEl = document.getElementById('delivery_address');
+                if (!addrEl || addrEl.value.trim() === '') {
+                    if (btn) { btn.disabled = false; }
+                    alert('Please enter a delivery address for Cash on Delivery.');
+                    return;
+                }
+            }
 
             fetch('place-order.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({
-                    cart: cart, 
-                    payment_method: paymentMethod,
-                    delivery_fee: deliveryFee,
-                    total_amount: total
-                })
+                    body: JSON.stringify({
+                        cart: cart,
+                        payment_method: paymentMethod,
+                        delivery_option: deliveryOption,
+                        delivery_address: (document.getElementById('delivery_address') ? document.getElementById('delivery_address').value.trim() : '')
+                    })
             })
             .then(response => response.json())
             .then(data => {
-                if(data.success) {
+                if(btn) { btn.disabled = false; }
+                if(data && data.success) {
                     localStorage.removeItem('cart');
                     window.location.href = 'order-success.php?order_id=' + data.order_id;
                 } else {
-                    alert(data.message || 'Something went wrong!');
+                    alert((data && data.message) ? data.message : 'Something went wrong placing your order.');
                 }
             })
             .catch(error => {
+                if(btn) { btn.disabled = false; }
                 console.error('Error:', error);
                 alert('An error occurred while placing the order.');
             });

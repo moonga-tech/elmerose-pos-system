@@ -49,12 +49,12 @@ CREATE TABLE orders (
     total_amount DECIMAL(10,2) NOT NULL,
     status ENUM('pending', 'confirmed', 'delivered', 'cancelled') DEFAULT 'pending',
     payment_method VARCHAR(50) DEFAULT 'cod',
+    delivery_fee DECIMAL(10,2) DEFAULT 0,
+    delivery_address TEXT,
+    rating TINYINT NULL DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (customer_id) REFERENCES customers(id)
 );
-
-ALTER TABLE orders 
-ADD COLUMN payment_method VARCHAR(50) DEFAULT 'cod' 
 
 CREATE TABLE order_items (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -73,8 +73,17 @@ CREATE TABLE password_resets (
     used TINYINT(1) DEFAULT 0
 );
 
+/* Alter table commands */
 -- Add expiry fields to products table
 ALTER TABLE products 
 ADD COLUMN has_expiry TINYINT(1) DEFAULT 0 COMMENT 'Whether product has expiry date',
 ADD COLUMN expiry_date DATE NULL COMMENT 'Product expiry date',
 ADD COLUMN expiry_alert_days INT DEFAULT 30 COMMENT 'Days before expiry to show alert';
+
+-- Ensure orders has delivery-related columns if altering an existing DB
+ALTER TABLE `orders`
+    ADD COLUMN IF NOT EXISTS `payment_method` VARCHAR(50) DEFAULT 'cod',
+    ADD COLUMN IF NOT EXISTS `delivery_fee` DECIMAL(10,2) DEFAULT 0,
+    ADD COLUMN IF NOT EXISTS `delivery_address` TEXT NULL,
+    ADD COLUMN IF NOT EXISTS `rating` TINYINT NULL DEFAULT NULL,
+    ADD COLUMN IF NOT EXISTS `is_received` TINYINT(1) DEFAULT 0;

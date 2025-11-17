@@ -14,11 +14,14 @@ require "authentication.php";
         <meta name="description" content="" />
         <meta name="author" content="" />
         <title>Elmerose POS - Admin Dashboard</title>
-    <link href="assets/css/styles.css" rel="stylesheet" />
-    <!-- centralized enhanced table styles for all admin pages -->
-    <link href="assets/css/enhanced-table.css" rel="stylesheet" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
 
+        <!-- styles -->
+        <link href="assets/css/styles.css" rel="stylesheet" />
+        <link rel="stylesheet" href="assets/css/buttons.css">
+
+        <!-- centralized enhanced table styles for all admin pages -->
+        <link href="assets/css/enhanced-table.css" rel="stylesheet" />
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
     </head>
 <body class="sb-nav-fixed">
 

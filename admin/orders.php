@@ -35,10 +35,12 @@
                 <table class="table enhanced-table mb-0">
                     <thead>
                         <tr>
-                            <th><i class="fas fa-hashtag me-2"></i>Order ID</th>
+                            <!-- <th><i class="fas fa-hashtag me-2"></i>Order ID</th> -->
                             <th><i class="fas fa-user me-2"></i>Customer</th>
                             <th><i class="fas fa-peso-sign me-2"></i>Amount</th>
-                            <th><i class="fas fa-info-circle me-2"></i>Status</th>
+                                    <th><i class="fas fa-info-circle me-2"></i>Status</th>
+                            <th><i class="fas fa-star me-2"></i>Rating</th>
+                                    <th><i class="fas fa-box-open me-2"></i>Received</th>
                             <th><i class="fas fa-credit-card me-2"></i>Payment</th>
                             <th><i class="fas fa-calendar me-2"></i>Date</th>
                             <th><i class="fas fa-cogs me-2"></i>Actions</th>
@@ -149,9 +151,9 @@
                                 ?>
                                 <tr>
 
-                                    <td>
+                                    <!-- <td>
                                         <strong>#<?= htmlspecialchars($order['id'], ENT_QUOTES, 'UTF-8'); ?></strong>
-                                    </td>
+                                    </td> -->
 
                                     <td>
                                         <div>
@@ -166,10 +168,28 @@
                                         </span>
                                     </td>
                                     <td>
+                                        <?php if (!empty($order['rating']) && is_numeric($order['rating'])): ?>
+                                            <?php $r = (int)$order['rating'];
+                                            for ($s=1;$s<=5;$s++) {
+                                                echo $s <= $r ? '<i class="fas fa-star text-warning"></i>' : '<i class="far fa-star text-muted"></i>';
+                                            }
+                                            ?>
+                                        <?php else: ?>
+                                            N/A
+                                        <?php endif; ?>
+                                    </td>
+                                        <td>
+                                            <?php if (!empty($order['is_received'])): ?>
+                                                <span class="badge bg-success">Received</span>
+                                            <?php else: ?>
+                                                <span class="badge bg-secondary">Not received</span>
+                                            <?php endif; ?>
+                                        </td>
+                                    <td>
                                         <?= !empty($order['payment_method']) ? htmlspecialchars(strtoupper($order['payment_method']), ENT_QUOTES, 'UTF-8') : 'N/A'; ?>
                                     </td>
                                     <td><?= date('M d, Y H:i', strtotime($order['created_at'])); ?></td>
-                                    <td>
+                                    <td class="text-center flex justify-content-center gap-2">
                                         
                                         <a href="order-edit.php?id=<?= $order['id']; ?>" class="btn btn-success btn-sm me-1">
                                             <i class="fas fa-edit me-1"></i>Update
@@ -185,7 +205,9 @@
                                         <?php if(isArchived('order', $order['id'])): ?>
                                             <a href="orders-unarchive.php?id=<?= $order['id']; ?>" class="btn btn-success btn-sm" onclick="return confirm('Restore this order from archive?')"><i class="fas fa-undo me-1"></i>Restore</a>
                                         <?php else: ?>
-                                            <a href="orders-archive.php?id=<?= $order['id']; ?>" class="btn btn-warning btn-sm" onclick="return confirm('Move this order to archive?')"><i class="fas fa-archive me-1"></i>Move to Archive</a>
+                                            <a href="orders-archive.php?id=<?= $order['id']; ?>" class="btn btn-warning btn-sm" onclick="return confirm('Move this order to archive?')"><small>
+                                                <i class="fas fa-archive me-1"></i>Move to Archive
+                                            </small></a>
                                         <?php endif; ?>
                                     </td>
                                 </tr>

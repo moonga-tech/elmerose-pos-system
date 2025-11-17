@@ -74,8 +74,10 @@ $orders = mysqli_query($conn, "SELECT * FROM orders WHERE customer_id = '$custom
                                 <th>Order ID</th>
                                 <th>Total Amount</th>
                                 <th>Status</th>
+                                <th>Received</th>
+                                <th>Rating</th>
                                 <th>Date</th>
-                                <th></th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -85,6 +87,7 @@ $orders = mysqli_query($conn, "SELECT * FROM orders WHERE customer_id = '$custom
                                     ?>
                                     <tr>
                                         <td>#<?= htmlspecialchars($order['id'], ENT_QUOTES, 'UTF-8'); ?></td>
+                                        <!-- <td> ?= $order['name'] ?></td> -->
                                         <td>₱<?= number_format($order['total_amount'], 2); ?></td>
                                         <td>
                                             <?php
@@ -96,6 +99,32 @@ $orders = mysqli_query($conn, "SELECT * FROM orders WHERE customer_id = '$custom
                                                 if($status == 'cancelled') $badge_class = 'bg-danger';
                                                 echo "<span class='badge {$badge_class}'>".ucfirst($status)."</span>";
                                             ?>
+                                        </td>
+                                        <td>
+                                            <?php if (!empty($order['is_received'])): ?>
+                                                <span class="badge bg-success">Received</span>
+                                            <?php else: ?>
+                                                <?php if ($order['status'] === 'delivered'): ?>
+                                                    <button class="btn btn-sm btn-success" onclick="confirmReceived(<?= $order['id']; ?>, this)">Confirm Received</button>
+                                                <?php else: ?>
+                                                    <span class="text-muted">-</span>
+                                                <?php endif; ?>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td>
+                                            <?php if (!empty($order['rating']) && is_numeric($order['rating'])): ?>
+                                                <?php $r = (int)$order['rating'];
+                                                for ($s=1;$s<=5;$s++) {
+                                                    echo $s <= $r ? '<i class="fas fa-star text-warning"></i>' : '<i class="far fa-star text-muted"></i>';
+                                                }
+                                                ?>
+                                            <?php else: ?>
+                                                <?php if ($order['status'] === 'delivered'): ?>
+                                                    <button class="btn btn-sm btn-outline-primary" onclick="rateOrderPrompt(<?= $order['id']; ?>)">Rate</button>
+                                                <?php else: ?>
+                                                    N/A
+                                                <?php endif; ?>
+                                            <?php endif; ?>
                                         </td>
                                         <td><?= date('d M, Y', strtotime($order['created_at'])); ?></td>
                                         <td><a href="order-details.php?id=<?= $order['id']; ?>" class="btn btn-sm btn-primary">View</a></td>
@@ -114,5 +143,112 @@ $orders = mysqli_query($conn, "SELECT * FROM orders WHERE customer_id = '$custom
     </div>
 
     <script src="../assets/bootstrap-5.3.8-dist/js/bootstrap.bundle.min.js"></script>
+    
+        <!-- Rating modal -->
+        <div class="modal fade" id="ratingModal" tabindex="-1" aria-labelledby="ratingModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-sm modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="ratingModalLabel">Rate your order</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <p class="text-muted">Please select a rating (1 = worst, 5 = best)</p>
+                        <div id="ratingStars" class="d-flex justify-content-center gap-2 mb-3">
+                            <button type="button" class="btn btn-sm btn-outline-secondary rating-star" data-value="1" onclick="setRatingStars(1)">☆</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary rating-star" data-value="2" onclick="setRatingStars(2)">☆</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary rating-star" data-value="3" onclick="setRatingStars(3)">☆</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary rating-star" data-value="4" onclick="setRatingStars(4)">☆</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary rating-star" data-value="5" onclick="setRatingStars(5)">☆</button>
+                        </div>
+                        <div class="text-center">
+                            <button id="ratingSubmitBtn" type="button" class="btn btn-primary" onclick="submitRatingFromModal()">Submit Rating</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <script>
+        async function confirmReceived(orderId, btn) {
+            if (!confirm('Are you sure you have received this order?')) return;
+            try {
+                btn.disabled = true;
+                const resp = await fetch('confirm-received.php', {
+                    method: 'POST',
+                    headers: {'Content-Type':'application/json'},
+                    body: JSON.stringify({order_id: orderId})
+                });
+                const data = await resp.json();
+                if (data.success) {
+                    alert('Order marked as received. Thank you!');
+                    location.reload();
+                } else {
+                    alert(data.message || 'Failed to mark as received');
+                    btn.disabled = false;
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Error contacting server');
+                btn.disabled = false;
+            }
+        }
+
+        // Rating modal implementation
+        let ratingModalInstance = null;
+        let currentRatingOrderId = null;
+        let currentRatingValue = 0;
+
+        function setRatingStars(n) {
+            currentRatingValue = n;
+            const stars = document.querySelectorAll('#ratingModal .rating-star');
+            stars.forEach(s => {
+                const val = parseInt(s.dataset.value, 10);
+                s.classList.toggle('btn-warning', val <= n);
+                s.classList.toggle('btn-outline-secondary', val > n);
+                s.textContent = val <= n ? '★' : '☆';
+            });
+        }
+
+        function rateOrderPrompt(orderId) {
+            currentRatingOrderId = orderId;
+            currentRatingValue = 0;
+            setRatingStars(0);
+            if (!ratingModalInstance) {
+                const modalEl = document.getElementById('ratingModal');
+                ratingModalInstance = new bootstrap.Modal(modalEl);
+            }
+            ratingModalInstance.show();
+        }
+
+        async function submitRatingFromModal() {
+            if (!currentRatingOrderId || currentRatingValue < 1 || currentRatingValue > 5) {
+                alert('Please select a rating between 1 and 5');
+                return;
+            }
+            const btn = document.getElementById('ratingSubmitBtn');
+            btn.disabled = true;
+            try {
+                const resp = await fetch('rate-order.php', {
+                    method: 'POST',
+                    headers: {'Content-Type':'application/json'},
+                    body: JSON.stringify({order_id: currentRatingOrderId, rating: currentRatingValue})
+                });
+                const data = await resp.json();
+                if (data.success) {
+                    ratingModalInstance.hide();
+                    // small success message then reload
+                    alert(data.message || 'Thanks for rating!');
+                    location.reload();
+                } else {
+                    alert(data.message || 'Failed to save rating');
+                    btn.disabled = false;
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Error contacting server');
+                btn.disabled = false;
+            }
+        }
+    </script>
 </body>
 </html>

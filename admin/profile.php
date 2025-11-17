@@ -66,7 +66,7 @@
                     <i class="fas fa-user-edit me-2"></i>
                     <h4 class="mb-0 d-inline">My Profile</h4>
                 </div>
-                <a href="index.php" class="btn btn-light btn-sm">
+                <a href="index.php" class="btn btn-enhanced text-white">
                     <i class="fas fa-arrow-left me-1"></i>Dashboard
                 </a>
             </div>

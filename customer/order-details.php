@@ -97,21 +97,23 @@ $orderItems = mysqli_query($conn, $orderItemsQuery);
                                 if($status == 'confirmed') $badge_class = 'bg-info';
                                 if($status == 'delivered') $badge_class = 'bg-success';
                                 if($status == 'cancelled') $badge_class = 'bg-danger';
-                                echo "<span class='badge {$badge_class}'>".ucfirst($status)."</span>";
+                                echo "<small class='badge {$badge_class}'>".ucfirst($status)."</small>";
                             ?>
                         </p>
                     </div>
                     <div class="col-md-6 text-md-end">
-                        <h4 class="mb-0">Total: ₱<?= number_format($order['total_amount'], 2); ?></h4>
+                        <h4 class="mb-0">Total: ₱ <?= number_format($order['total_amount'], 2); ?></h4>
                     </div>
                 </div>
 
+            
                 <h5>Items in this order:</h5>
                 <div class="table-responsive">
                     <table class="table table-bordered">
                         <thead>
                             <tr>
                                 <th>Product</th>
+                                <th>Delivery Address</th>
                                 <th>Price</th>
                                 <th>Quantity</th>
                                 <th>Subtotal</th>
@@ -124,20 +126,24 @@ $orderItems = mysqli_query($conn, $orderItemsQuery);
                                     ?>
                                     <tr>
                                         <td><?= htmlspecialchars($item['productName'], ENT_QUOTES, 'UTF-8'); ?></td>
-                                        <td>₱<?= number_format($item['price'], 2); ?></td>
+                                        <td><?= nl2br(htmlspecialchars($order['delivery_address'] ?? '', ENT_QUOTES, 'UTF-8')); ?></td>
+                                        <td>₱ <?= number_format($item['price'], 2); ?></td>
                                         <td><?= $item['quantity']; ?></td>
-                                        <td>₱<?= number_format($item['price'] * $item['quantity'], 2); ?></td>
+                                        <td>₱ <?= number_format($item['price'] * $item['quantity'], 2); ?></td>
                                     </tr>
                                     <?php
                                 }
                             } else {
-                                echo '<tr><td colspan="4" class="text-center text-muted">No items found for this order.</td></tr>';
+                                echo '<tr><td colspan="5" class="text-center text-muted">No items found for this order.</td></tr>';
                             }
                             ?>
                         </tbody>
                     </table>
                 </div>
                 <div class="mt-4">
+                    <?php if ($order['status'] === 'delivered' && empty($order['is_received'])): ?>
+                        <button id="confirmReceivedBtn" class="btn btn-success" onclick="confirmReceived(<?= $order['id']; ?>)"><i class="fas fa-check me-2"></i>Mark as Received</button>
+                    <?php endif; ?>
                     <a href="orders.php" class="btn btn-secondary"><i class="fas fa-arrow-left me-2"></i>Back to Orders</a>
                 </div>
             </div>
@@ -145,5 +151,27 @@ $orderItems = mysqli_query($conn, $orderItemsQuery);
     </div>
 
     <script src="../assets/bootstrap-5.3.8-dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        async function confirmReceived(orderId) {
+            if (!confirm('Are you sure you want to mark this order as received?')) return;
+            try {
+                const resp = await fetch('confirm-received.php', {
+                    method: 'POST',
+                    headers: {'Content-Type':'application/json'},
+                    body: JSON.stringify({order_id: orderId})
+                });
+                const data = await resp.json();
+                if (data.success) {
+                    alert('Thank you. Order marked as received.');
+                    location.reload();
+                } else {
+                    alert(data.message || 'Failed to mark as received');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Error contacting server');
+            }
+        }
+    </script>
 </body>
 </html>

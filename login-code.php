@@ -8,8 +8,7 @@ if (isset($_POST['loginBtn'])) {
         $remaining = $_SESSION['login_lockout_until'] - time();
         redirect('login.php', "Too many failed attempts. Please wait {$remaining} seconds.", 'error');
     }
-
-
+    
     $email = validated($_POST['email']);
     $password = validated($_POST['password']);
 
